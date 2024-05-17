@@ -1,0 +1,9 @@
+[
+    [
+        "930602",
+        "GXJZZXHH",
+        "国信价值智选混合",
+        "混合型-偏股",
+        "GUOXINJIAZHIZHIXUANHUNHE"
+    ]
+]
