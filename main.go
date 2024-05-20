@@ -25,15 +25,22 @@ func main() {
 	// 假设这是天天基金网提供的获取所有基金信息的API
 	//fundInfoAPI := "http://fund.eastmoney.com/js/fundcode_search.js"
 
-	// 发起请求获取所有基金信息
-	funds, err := loadFundData("混合型-偏股.txt")
+	funds, err := filterByType()
 	if err != nil {
 		fmt.Println("fund info err:", err)
 		return
 	}
 	fmt.Println("fund info:", funds[0].Name, funds[0].Code)
-	jsonStr, _ := json.Marshal(funds)
-	saveFundInfo("混合型-偏股_code.json", jsonStr)
+
+	// 假设我们需要获取前一天的基金净值数据
+	// 这里需要根据实际API来确定如何获取前一天的日期和净值数据
+	// 以下代码仅为示例
+	yesterdayFundValue, err := getFundValue(funds[0].Code, "前一天的日期")
+	if err != nil {
+		fmt.Println("Error getting fund value:", err)
+	}
+
+	fmt.Printf("Yesterday's value: %f\n", yesterdayFundValue.Value)
 	//// 遍历基金信息，获取每个基金的净值数据
 	//for _, fund := range funds {
 	//	fmt.Printf("Fund: %s (%s)\n", fund[0], fund[1])
@@ -74,6 +81,18 @@ func getFundInfo(url string) ([]FundInfo, error) {
 	return fundInfoArray, nil
 }
 
+func filterByType() ([]FundInfo, error) {
+	// 发起请求获取所有基金信息
+	funds, err := loadFundData("混合型-偏股.txt")
+	if err != nil {
+		fmt.Println("fund info err:", err)
+		return nil, err
+	}
+	fmt.Println("fund info:", funds[0].Name, funds[0].Code)
+	//jsonStr, _ := json.Marshal(funds)
+	//saveFundInfo("混合型-偏股_code.json", jsonStr)
+	return funds, nil
+}
 func loadFundData(path string) ([]FundInfo, error) {
 	data, err := os.ReadFile(path)
 	var tmps [][]string
@@ -97,7 +116,7 @@ func loadFundData(path string) ([]FundInfo, error) {
 func getFundValue(fundCode, endDate string) (FundValue, error) {
 	// 假设这是天天基金网提供的获取基金净值数据的API
 	// 注意：这里的URL和参数需要根据实际API来确定
-	apiURL := fmt.Sprintf("http://fund.eastmoney.com/f10/F10DataApi.aspx?type=lsjz&code=%s&page=1&sdate=2000-01-01&edate=%s&per=20", fundCode, endDate)
+	apiURL := fmt.Sprintf("http://fund.eastmoney.com/f10/F10DataApi.aspx?type=lsjz&code=%s&page=1", fundCode)
 
 	resp, err := http.Get(apiURL)
 	if err != nil {
@@ -109,6 +128,7 @@ func getFundValue(fundCode, endDate string) (FundValue, error) {
 	if err != nil {
 		return FundValue{}, err
 	}
+	fmt.Println(string(body))
 
 	// 使用正则表达式提取JSON数据部分
 	re := regexp.MustCompile(`(?m)(\{.*\})`)
