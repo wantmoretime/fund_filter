@@ -1,4 +1,4 @@
-package main
+package aspx
 
 import (
 	"encoding/json"
@@ -15,15 +15,18 @@ type TableData struct {
 }
 
 type PValue struct {
-	Data   string `json:"data_time"`
-	Price  string `json:"day_price"`
-	CPrice string `json:"accumulate_price"`
-	Rate   string `json:"rate"`
+	Data   string `json:"净值日期"`
+	Price  string `json:"单位净值"`
+	CPrice string `json:"累计净值"`
+	Rate   string `json:"日增长率"`
 }
 
-func main() {
-	// 目标ASPX页面的URL
-	url := "https://fundf10.eastmoney.com/F10DataApi.aspx?type=lsjz&code=970212&page=1"
+func getBaseUrl(code string, idx int) string {
+	return fmt.Sprintf("https://fundf10.eastmoney.com/F10DataApi.aspx?type=lsjz&code=%s&page=%d", code, idx)
+}
+
+func GetNetWorth(code string, idx int) {
+	url := getBaseUrl(code, idx)
 
 	// 发起HTTP GET请求
 	resp, err := http.Get(url)
@@ -72,6 +75,7 @@ func main() {
 	})
 
 	// 将表格数据编码为JSON
+	tablesData = tablesData[1:]
 	jsonBytes, err := json.Marshal(tablesData)
 	if err != nil {
 		log.Fatal(err)
