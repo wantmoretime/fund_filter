@@ -33,6 +33,8 @@ func main() {
 	fmt.Println("fund info:", funds[0].Name, funds[0].Code)
 
 	aspx.GetNetWorth(funds[0].Code, 1)
+
+	//fund_ranking.GetRankingData(fund_ranking.RankUrl)
 }
 
 // getFundInfo 发送HTTP请求获取基金信息列表
